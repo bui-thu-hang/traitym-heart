@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tống Đoàn — Heart Particles</title>
+    <style>
+      html, body { height:100%; padding:0; margin:0; background:#000; }
+      .box { width:100%; height:100%; position:relative; }
+      canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
+      @keyframes heartbeat { 0%{transform:scale(1)} 50%{transform:scale(1.02)} }
+      #pinkboard { animation: heartbeat 1.5s infinite; }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <canvas id="pinkboard"></canvas>
+    </div>
+    <script>
+      var settings = {
+        particles: { length: 1500, duration: 2.5, velocity: 200, effect: -0.6, size: 13 }
+      };
+
+      (function(){
+        var last = 0;
+        var vendors = ['ms','moz','webkit','o'];
+        for(var x=0; x<vendors.length && !window.requestAnimationFrame; ++x){
+          window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+          window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+        }
+        if(!window.requestAnimationFrame){
+          window.requestAnimationFrame = function(cb){
+            var now = new Date().getTime();
+            var dt = Math.max(0,16 - (now - last));
+            var id = window.setTimeout(function(){ cb(now + dt); }, dt);
+            last = now + dt;
+            return id;
+          };
+        }
+        if(!window.cancelAnimationFrame){
+          window.cancelAnimationFrame = function(id){ clearTimeout(id); };
+        }
+      })();
+
+      function Point(x,y){ this.x = x||0; this.y = y||0; }
+      Point.prototype.clone = function(){ return new Point(this.x,this.y); };
+      Point.prototype.length = function(len){ if(typeof len === 'undefined') return Math.sqrt(this.x*this.x + this.y*this.y); this.normalize(); this.x *= len; this.y *= len; return this; };
+      Point.prototype.normalize = function(){ var l = Math.sqrt(this.x*this.x + this.y*this.y) || 1; this.x /= l; this.y /= l; return this; };
+
+      function Particle(){ this.position = new Point(); this.velocity = new Point(); this.acceleration = new Point(); this.age = 0; }
+      Particle.prototype.initialize = function(x,y,dx,dy){ this.position.x = x; this.position.y = y; this.velocity.x = dx; this.velocity.y = dy; this.acceleration.x = dx * settings.particles.effect; this.acceleration.y = dy * settings.particles.effect; this.age = 0; };
+      Particle.prototype.update = function(dt){ this.position.x += this.velocity.x * dt; this.position.y += this.velocity.y * dt; this.velocity.x += this.acceleration.x * dt; this.velocity.y += this.acceleration.y * dt; this.age += dt; };
+      Particle.prototype.draw = function(ctx, img){ function ease(t){ return --t * t * t + 1; } var size = img.width * ease(this.age / settings.particles.duration); ctx.globalAlpha = Math.max(0, 1 - this.age / settings.particles.duration); ctx.drawImage(img, this.position.x - size/2, this.position.y - size/2, size, size); };
+
+      function ParticlePool(length){
+        var particles = new Array(length);
+        var firstActive = 0, firstFree = 0, duration = settings.particles.duration;
+        for(var i=0;i<length;i++) particles[i] = new Particle();
+
+        this.add = function(x,y,dx,dy){ particles[firstFree].initialize(x,y,dx,dy); firstFree++; if(firstFree == particles.length) firstFree = 0; if(firstActive == firstFree){ firstActive++; if(firstActive == particles.length) firstActive = 0; } };
+
+        this.update = function(dt){ var i; if(firstActive < firstFree){ for(i=firstActive;i<firstFree;i++) particles[i].update(dt); } if(firstFree < firstActive){ for(i=firstActive;i<particles.length;i++) particles[i].update(dt); for(i=0;i<firstFree;i++) particles[i].update(dt); } while(particles[firstActive].age >= duration && firstActive != firstFree){ firstActive++; if(firstActive == particles.length) firstActive = 0; } };
+
+        this.draw = function(ctx, img){ var i; if(firstActive < firstFree){ for(i=firstActive;i<firstFree;i++) particles[i].draw(ctx,img); } if(firstFree < firstActive){ for(i=firstActive;i<particles.length;i++) particles[i].draw(ctx,img); for(i=0;i<firstFree;i++) particles[i].draw(ctx,img); } };
+      }
+
+      (function(canvas){
+        var ctx = canvas.getContext('2d');
+        var particles = new ParticlePool(settings.particles.length);
+        var particleRate = settings.particles.length / settings.particles.duration;
+        var time;
+
+        function pointOnHeart(t){ return new Point(160*Math.pow(Math.sin(t),3), 130*Math.cos(t) - 50*Math.cos(2*t) - 20*Math.cos(3*t) - 10*Math.cos(4*t) + 25); }
+        function pointOnHeartx(t){ return new Point(160*Math.pow(Math.sin(t),3), 130*Math.cos(t) - 20*Math.cos(2*t) - 8*Math.cos(3*t) - 4*Math.cos(4*t) + 5); }
+        function pointOnHearty(t){ return new Point(320*Math.pow(Math.sin(t),3), 260*Math.cos(t) - 100*Math.cos(2*t) - 40*Math.cos(3*t) - 4*Math.cos(4*t) + 30); }
+
+        var image = (function(){ var c = document.createElement('canvas'); var cx = c.getContext('2d'); c.width = settings.particles.size; c.height = settings.particles.size; function to(t){ var p = pointOnHeart(t); p.x = settings.particles.size/2 + (p.x * settings.particles.size)/350; p.y = settings.particles.size/2 - (p.y * settings.particles.size)/350; return p; } cx.beginPath(); var t = -Math.PI; var p = to(t); cx.moveTo(p.x,p.y); while(t < Math.PI){ t += 0.01; p = to(t); cx.lineTo(p.x,p.y); } cx.closePath(); cx.fillStyle = '#ff3490'; cx.fill(); var img = new Image(); img.src = c.toDataURL(); return img; })();
+
+        function render(){ requestAnimationFrame(render); var newTime = new Date().getTime()/1000; var dt = newTime - (time || newTime); time = newTime; ctx.clearRect(0,0,canvas.width,canvas.height);
+
+          var amount = particleRate * dt; for(var i=0;i<amount;i++){ var pos = pointOnHeart(Math.PI - 2*Math.PI*Math.random()); var dir = pos.clone().length(settings.particles.velocity); particles.add(canvas.width/2 + pos.x, canvas.height/2 - pos.y, dir.x, -dir.y); }
+
+          var amountx = (particleRate * dt) / 5; for(i=0;i<amountx;i++){ var posx = pointOnHeartx(Math.PI - 2*Math.PI*Math.random()); var dirx = posx.clone().length(100); particles.add(canvas.width/2 + posx.x, canvas.height/2 - posx.y, dirx.x, -dirx.y); }
+
+          var amounty = (particleRate * dt) / 2; for(i=0;i<amounty;i++){ var posy = pointOnHearty(Math.PI - 2*Math.PI*Math.random()); var diry = posy.clone().length(100); particles.add(canvas.width/2 + posy.x, canvas.height/2 - posy.y, diry.x, -diry.y); }
+
+          particles.update(dt); particles.draw(ctx, image);
+        }
+
+        function onResize(){ var ratio = 1.5; canvas.width = canvas.clientWidth * ratio; canvas.height = canvas.clientHeight * ratio; }
+        window.addEventListener('resize', onResize);
+        setTimeout(function(){ onResize(); render(); }, 10);
+      })(document.getElementById('pinkboard'));
+    </script>
+  </body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type"
+    content="text/html; charset=UTF-8">
+	<script>
+	    var nowurl = document.location.toString();
+	    nowurl = nowurl.replace('https://','').replace('http://','').replace(window.location.host,'');
+	
+	    dwidth = '500';
+	    
+		//判断客户端设备，选择写入meta
+		function init_viewport() {
+			if (navigator.userAgent.indexOf('Android') != -1) {
+				var version = parseFloat(RegExp.$1);
+				if (version > 2.3) {
+					var width =
+						window.outerWidth == 0 ? window.screen.width : window.outerWidth;
+					var phoneScale = parseInt(width) / 500;
+					document.write(
+						'<meta name="viewport" content="width='+ dwidth +' minimum-scale = ' +
+						phoneScale +
+						', maximum-scale = ' +
+						phoneScale +
+						', target-densitydpi=device-dpi">'
+					);
+				} else {
+					document.write(
+						'<meta name="viewport" content="width='+ dwidth +' target-densitydpi=device-dpi, user-scalable=0">'
+					);
+				}
+			} else if (navigator.userAgent.indexOf('iPhone') != -1) {
+				var phoneScale = parseInt(window.screen.width) / 500;
+				document.write(
+					'<meta name="viewport" content="width='+ dwidth +' min-height=750, initial-scale=' +
+					phoneScale +
+					', maximum-scale=' +
+					phoneScale +
+					', user-scalable=0" /> '
+				); //0.75   0.82
+			} else {
+				document.write(
+					'<meta name="viewport" content="width='+ dwidth +' height=750, initial-scale=0.64" /> '
+				); //0.75  0.82
+			}
+		}
+		
+		init_viewport();
+	</script>
+	
+	<style>
+	html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    }
+
+	.iframe-div {
+		width: 100%;
+        height: 100%;
+		border: none;
+        margin: 0;
+        padding: 0;
+	}
+
+	.more-btn {
+		position: fixed;
+		cursor: pointer;
+		width: 42px;
+		height: 42px;
+		border: 2px solid white;
+		border-radius: 50%;
+		font-size: 1em;
+		line-height: 40px;
+		text-align: center;
+		z-index: 999;
+		top: 90px;
+		background-color: rgba(0, 0, 0, 0.3);
+		right: 20px;
+	}
+
+	.more-btn a {
+		cursor: pointer;
+		color: #fff;
+		text-decoration: none;
+	}
+
+	#img_music_wap {
+		cursor: pointer;
+		width: 42px;
+		height: 42px;
+		border: none;
+		border-radius: 50%;
+		font-size: 1em;
+		line-height: 40px;
+		text-align: center;
+		z-index: 999;
+		top: 30px;
+		right: 20px;
+	}
+
+	#div_music {
+		right: 30px;
+	}
+	
+	#div_btn_inner{ /*按钮部分内层，用于定位*/
+            color:white; 
+            text-shadow:1px 1px 1px #000;            
+            width: 500px;
+            padding-left: 430px;
+        }
+
+        .div_btn {
+            position: fixed;
+            cursor: pointer;  
+            width: 42px; 
+            height: 42px;
+            border: 2px solid white;
+            border-radius: 50%; 
+            font-size: 1em;
+            line-height: 40px;
+            text-align: center; 
+            z-index:999;
+        } 
+        #div_music {
+            border: none;
+            top: 30px; 
+        }
+        #div_record {
+            top: 100px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        #div_support{ 
+            top: 170px; 
+            background-color: rgba(0, 0, 0, 0.3);
+        }        
+
+        .div_music_tips{  
+            position: fixed;
+            top: 70px; 
+            z-index:999;
+        }
+        .div_record_tips{  
+            position: fixed;
+            top: 140px;
+            z-index:999;
+        }
+
+        .div_btn_big {
+            position: fixed;
+            cursor: pointer; 
+            width: 52px; 
+            background-color: rgba(112,128,144, 0.6); 
+            border-radius: 5px; 
+            padding: 10px 0px;
+            font-size: 1.1em;
+            line-height: 1.3em;
+            text-align: center; 
+            z-index:999;
+        }
+        #div_s_upload {
+            top: 360px;
+        }
+        #div_s_sound {
+            top: 440px;
+        }
+        #div_s_choose {
+            top: 520px;
+        }
+        #div_s_qa {
+            top: 600px;
+        }
+
+        @-webkit-keyframes music_play_rotate{
+            0%{
+                -webkit-transform:rotate(0deg);
+            }
+            100%{
+                -webkit-transform:rotate(360deg);
+            }
+        }
+        @-webkit-keyframes btn_rotate{ /*帮助按钮的动画*/
+            0%  {
+                -webkit-transform:rotate(0deg);
+            }
+            40% {
+                -webkit-transform:rotate(0deg);
+            }
+            50% {
+                -webkit-transform:rotate(30deg);
+            }
+            60% {
+                -webkit-transform:rotate(0deg);
+            }
+            70% {
+                -webkit-transform:rotate(30deg);
+            }
+            80% {
+                -webkit-transform:rotate(0deg);
+            }
+            100% {
+                -webkit-transform:rotate(0deg);
+            }
+        }
+        
+        #action-make{position: absolute; bottom: 150px; width: 100%;  font-size:24px;}
+        #action-make .btn1 { color: #fff; background-color: #2196f3; } 
+        
+        #action-make .btn-return { float: left; border-radius: 0 2rem 2rem 0; padding: 0.8rem 2.4rem 0.8rem 2.4rem; box-shadow: 0.2rem 0 0.2rem #888888; } 
+        #action-make .btn-make { float: right; border-radius: 2rem 0 0 2rem; padding: 0.8rem 1.5rem 0.8rem 1.5rem; box-shadow: 0 0.2rem 0.2rem #888888; }
+        
+        @keyframes text-flicker { 0% {opacity: 0} 49% {opacity: 0} 50% {opacity: 1} }.cur-end{animation: text-flicker 0.8s infinite;}#btn-hot { bottom: 12.5rem; right: 18px; background-color: #bf1e1e; color: #fff; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+	<iframe id="myframe" class="iframe-div" width="100%" src=""></iframe>
+
+    	<div id="more-btn" class="div_btn more-btn" style="bottom: 50px;top:auto" id="morte-bt" onclick="var href = $('#moreLink').data('href');window.location.href=href;">
+		<a id="moreLink" data-href="http://c-ss.com.cn/maps/?host=m.360ka.cn"><span>更多</span></a>
+	</div>
+
+	<div id="make-btn" class="div_btn more-btn" style="bottom: 110px;top:auto" onclick="var href = $('#makeLink').data('href');window.location.href=href;">
+	    <a  id="makeLink" data-href="weixin://dl/business/?appid=wxd461833fb16f0351&path=pages/index/index&query=channel">制作</a>
+    </div>
+      
+<script src="https://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    var id = "1044";
+    var data_type = "0";
+    var vip_type = "0";
+    var temp_id = "29";
+    var views = "11657";
+    var dataInfo = {"id":1044,"nid":"5580","title":"\u2764\ufe0f\ufe0f\ufe0f","ftitle":"","ctitle":"","temp_id":29,"cover_url":"https:\/\/txmov2.a.kwimgs.com\/upic\/2022\/11\/16\/23\/BMjAyMjExMTYyMzQyNThfMzA5MjUyOTczNl84ODg4MTg4MzUyN18yXzM=_b_Ba52782233ade9d44350a5f8b3ae2a55e.mp4","background_url":"https:\/\/p3-search.byteimg.com\/obj\/labis\/3498727a4b2892b982b3085651630b1b","opacity":1,"music_url":"https:\/\/txmov2.a.kwimgs.com\/upic\/2022\/06\/15\/14\/BMjAyMjA2MTUxNDM5MjdfNDI1MTA0MDAxXzc2ODI0ODg2NzQyXzFfMw==_b_B0bde14eb4843f344b712d8d53c2c95ba.mp4","data_type":0,"vip":0,"views":11657,"views_update":false,"hide_btn":false};
+    dataInfo.is_mobile = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
+    
+    
+	var BASE_URL = 'https://v1.20it.cn';
+	BASE_URL = BASE_URL + '/5580';
+	var nowurl = document.location.toString();
+	nowurl = nowurl.replace('https://','').replace('http://','').replace(window.location.host,'');
+    //BASE_URL = BASE_URL + nowurl;
+        
+    
+	const frameDom = document.getElementById('myframe');
+	var num = location.pathname.replace(/\//g, '');
+	frameDom.style.height = '100vh';
+	
+	document.getElementById('myframe').src = BASE_URL + '?host=' + window.location.host;
+	$('html').css('background','#fff');
+	var dtitle=document.title;    
+	
+	/*
+	var mp_eg = 'weixin://dl/business/?appid=wxd461833fb16f0351&path=pages/index/index&query=channel';var mp_ios = 'weixin://dl/business/?appid=wxd461833fb16f0351&path=pages/index/index&query=channel';
+	eval(function(e,f,a,d,c,g){c=function(b){return(b<f?"":c(parseInt(b/f)))+(35<(b%=f)?String.fromCharCode(b+29):b.toString(36))};if(!"".replace(/^/,String)){for(;a--;)g[c(a)]=d[a]||c(a);d=[function(b){return g[b]}];c=function(){return"\\w+"};a=1}for(;a--;)d[a]&&(e=e.replace(new RegExp("\\b"+c(a)+"\\b","g"),d[a]));return e}('4 8={11:0,j:0,k:0,l:0,m:0,n:0,15:0,o:0,p:0,q:0,r:0,s:0,t:0,9:0,16:0,u:0,v:0,w:0,x:0,};y.z(e,8);4 b=c.f("A");4 g=c.f("B");d(C.D("E\u8003")>-1){g.6("2-3","F://G.H.I/J-7")}d(K 8[e]!=="L"){b.6("2-3",M)}N{d(/O|P|Q/i.R(S.T)){b.6("2-3",U)}}4 h=c.V(".W a");h.X(Y(a){a.6("2-3",a.Z("2-3")+"#"+10 12().13().14().17(-11,5),)});',
+62,70,"  data href var  setAttribute  eg_temp_ids   makeBtn document if temp_id getElementById moreBtn aTags  41 40 21 30 31 22 18 23 26 25 27 19 50 56 57 console log makeLink moreLink dtitle indexOf 2222 http m1 360ka cn cate typeof undefined mp_eg else iPhone iPad iPod test navigator userAgent mp_ios querySelectorAll div_btn forEach function getAttribute new  Date getTime toString   substr".split(" "),0,{}));
+    */
+    
+    function getMMDDYYYY() {
+        const date = new Date(); // 获取当前时间
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始，需+1，补零
+        const day = String(date.getDate()).padStart(2, '0'); // 日期补零
+        const year = date.getFullYear(); // 4位年份
+        return month + day + year; // 拼接格式：MMDDYYYY
+    }
+
+    
+    const link = document.getElementById('moreLink');
+    if (link) link.href = 'https://c-ss.com.cn/maps/?host=m.360ka.cn';
+    
+    const makeLink = document.getElementById('makeLink');
+    if(makeLink){
+        makeLink.setAttribute('data-href', "weixin://dl/business/?appid=wx33474b7963e5638b&path=pages/index/index&query=fromHost%3D"+ window.location.hostname +"%26fromNid%3D" + dataInfo.nid);
+    }
+</script>
+
+<script>
+var nowurl = window.location.href;
+var nowref = document.referrer;
+
+var ua = navigator.userAgent.toLowerCase(); 
+if (ua.match(/MicroMessenger/i) == "micromessenger" && ua.indexOf("miniprogram") < 1 && nowurl.indexOf("wan2") < 1 && nowurl.indexOf("cate") < 1 && nowurl.indexOf("new") < 1 && nowurl.indexOf("mp") < 1 && nowurl.indexOf("zkd") < 1){ 
+	//document.writeln("<script src=\"https://v1.20it.cn/static/js/mp-jump.js?v2131\"><\/script>");
+}
+
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?9268d9128fcebf1a5da96d7cb2a8dac4";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+
+window.onpageshow = function (){
+	sessionStorage.getItem("jumpOut") && a();
+};
+
+var apiArr = [
+    "https://api.wljw21.cn/task/getDomain?hh=ee76&cs=2&pp=1",
+	"https://ai.top/api/getWeUrl?tid=1",
+	"https://api.jianyuekeji.cn/api/getDomain/3286_7bwv1yukxsbx19yg",
+	"https://api.jianyuekeji.cn/api/getDomain/5133_jdvue9vejevmeusg",
+	"https://api.jianyuekeji.cn/api/getDomain/5134_4kwyn83uebbffavk",
+	"https://adx.tuia.cn/bid/tuia",
+	"https://ai.top/api/getWeUrl?tid=2",
+	"https://ai.top/api/getWeUrl?tid=3",
+	"https://ai.top/api/getWeUrl?tid=4",
+	"https://api.hbty002.cn/task/getDomain?hh=zz100&cs=2&pp=1",//8 万ju
+	"https://api.hbty002.cn/task/getDomain?hh=zz100&cs=2&pp=1",//9 liumao
+	"https://api.hbty002.cn/task/getDomain?hh=bx28&cs=2&pp=1", //10 wuqion
+	"http://www.senyikeji.net/api/domain?ch=4001",//10
+];
+
+var timeid = new Date().getTime().toString().substr(-5);
+var durl = "";
+var href = location.href;
+var apiUrl = "";
+/*
+if(href.indexOf(".best" ) > -1){
+    var rand_n = Math.floor(Math.random() * 100);
+    if(rand_n <= 50){
+        apiUrl = apiArr[2];
+    }else{
+        apiUrl = apiArr[10];
+    }
+}else{
+    
+    
+}
+*/
+
+durl = "weixin://dl/business/?appid=wx33474b7963e5638b&path=pages/index/index&query=fromHost%3Dmp:"+ window.location.hostname +"%26fromNid%3D" + dataInfo.nid;
+
+
+if(!durl){
+	window.fetch(apiUrl).then(function (res){
+		return res.json();
+	}).then(function (data){
+		durl = data.url ? data.url : data.data.url;
+		
+	});
+}
+
+
+function a(){
+    var ua = navigator.userAgent.toLowerCase();
+	if (durl && ua.indexOf("miniprogram") < 1){
+		location.href = durl;
+	}
+}
+
+function ntzgo2(){
+    return;
+	history.pushState(history.length + 1, "message", window.location.href.split("#")[0] + "#" + new Date().getTime(), );
+	if (navigator.userAgent.indexOf("Android") != -1){
+		if (typeof tbsJs != "undefined"){
+			tbsJs.onReady("{useCachedApi : 'true'}",
+			function(e){});
+			window.onhashchange = function(){
+				window.history.pushState("forward", null, "#");
+				window.history.forward(1);
+				if (durl){
+            		location.href = durl;
+            	}
+			}
+		}else{
+			var pop = 0;
+			window.onhashchange = function(event){
+				pop++;
+				if (pop >= 3){
+					if (durl){
+                		location.href = durl;
+                	}
+				}else{
+					history.go(1);
+				}
+			};
+			history.go(-1);
+		}
+	}else{
+		window.onhashchange = function(){
+			if (durl){
+        		location.href = durl;
+        	}
+		}
+	}
+}
+
+window.addEventListener('message', function(event) {
+    console.log(event.data, event.data.type);
+    // 你可以添加源验证，例如：if (event.origin === 'https://your-iframe-origin')
+    if (event.data && event.data.event === 'iframeClicked') {
+        console.log('Iframe被点击了11');
+        if (typeof ntzgo2 === 'function' && ua.indexOf("miniprogram") < 1) {ntzgo2();}
+    }
+});
+
+if(temp_id == 18 ){
+    //ntzgo2();
+}
+
+var newTempIds = [61,62,63,64,65,66,67,68,69];
+
+if(newTempIds.includes(dataInfo.temp_id) && ua.indexOf("miniprogram") < 1){
+    console.log('阅读444');
+    if (typeof ntzgo2 === 'function') {ntzgo2();}
+}
+</script>
+
+</body>
+</html>
