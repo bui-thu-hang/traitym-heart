@@ -216,15 +216,6 @@
 
 <body>
 	<iframe id="myframe" class="iframe-div" width="100%" src=""></iframe>
-
-    	<div id="more-btn" class="div_btn more-btn" style="bottom: 50px;top:auto" id="morte-bt" onclick="var href = $('#moreLink').data('href');window.location.href=href;">
-		<a id="moreLink" data-href="http://c-ss.com.cn/maps/?host=m.360ka.cn"><span>Xem thêm</span></a>
-	</div>
-
-	<div id="make-btn" class="div_btn more-btn" style="bottom: 110px;top:auto" onclick="var href = $('#makeLink').data('href');window.location.href=href;">
-	    <a  id="makeLink" data-href="weixin://dl/business/?appid=wxd461833fb16f0351&path=pages/index/index&query=channel">Tạo</a>
-    </div>
-      
 <script src="https://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
     var id = "1044";
@@ -257,13 +248,7 @@
     }
 
     
-    const link = document.getElementById('moreLink');
-    if (link) link.href = 'https://c-ss.com.cn/maps/?host=m.360ka.cn';
-    
-    const makeLink = document.getElementById('makeLink');
-    if(makeLink){
-        makeLink.setAttribute('data-href', "weixin://dl/business/?appid=wx33474b7963e5638b&path=pages/index/index&query=fromHost%3D"+ window.location.hostname +"%26fromNid%3D" + dataInfo.nid);
-    }
+	// Floating "Xem thêm" and "Tạo" buttons removed per user request
 </script>
 
 <script>
